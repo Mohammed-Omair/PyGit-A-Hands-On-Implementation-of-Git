@@ -25,7 +25,7 @@ def main():
         size = decompressed_data.split(b'\x00', 1)[0]
         data = decompressed_data.split(b'\x00', 1)[1]
         data = data.decode("utf-8").strip("\n")
-        print(data)
+        print(data, end="")
 
     else:
         raise RuntimeError(f"Unknown command #{command}")
