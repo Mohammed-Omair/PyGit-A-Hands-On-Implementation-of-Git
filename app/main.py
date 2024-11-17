@@ -24,8 +24,8 @@ def main():
         decompressed_data = zlib.decompress(compressed_data)
         size = decompressed_data.split(b'\x00', 1)[0]
         data = decompressed_data.split(b'\x00', 1)[1]
-        data = data.strip("\n")
-        print(data.decode("utf-8"))
+        data = data.decode("utf-8").strip("\n")
+        print(data)
 
     else:
         raise RuntimeError(f"Unknown command #{command}")
