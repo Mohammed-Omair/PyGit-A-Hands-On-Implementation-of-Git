@@ -41,7 +41,7 @@ def main():
         dir = ".git/objects/" + sha[0:2]
         os.mkdir(dir)
         file = dir + "/" +sha[2:]
-        with open(file, "w") as file:
+        with open(file, "wb") as file:
             file.write(compressed_data)
 
         print(sha)
