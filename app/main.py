@@ -36,7 +36,14 @@ def main():
                 file_content = file.read()
         header = f"blob {len(file_content)}\x00"
         store = header.encode("ascii") + file_content
+        compressed_data = zlib.compress(store)
         sha = hashlib.sha1(store).hexdigest()
+        dir = ".git/objects/" + sha[0:2]
+        os.mkdir(dir)
+        file = dir + "/" +sha[2:]
+        with open(file, "w") as file:
+            file.write(compressed_data)
+
         print(sha)
     else:
         raise RuntimeError(f"Unknown command #{command}")
