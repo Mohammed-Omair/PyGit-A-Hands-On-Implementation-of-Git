@@ -1,6 +1,7 @@
 import sys
 import os
 import zlib
+import hashlib
 
 def main():
     # You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -26,7 +27,17 @@ def main():
         data = decompressed_data.split(b'\x00', 1)[1]
         data = data.decode("utf-8").strip("\n")
         print(data, end="")
-
+    elif command == "hash-object":
+        if len(sys.argv) != 4:
+            print("The command is missing arguments. usage: hash-object -w <file>", file=sys.stderr)
+            exit()
+        file_name= sys.argv[-1]
+        with open(file_name, "rb") as file:
+                file_content = file.read()
+        header = f"blob {len(file_content)}\x00"
+        store = header.encode("ascii") + file_content
+        sha = hashlib.sha1(store).hexdigest()
+        print(sha)
     else:
         raise RuntimeError(f"Unknown command #{command}")
 
