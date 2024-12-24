@@ -2,6 +2,9 @@ import sys
 import os
 import zlib
 import hashlib
+import time
+from datetime import datetime, timezone
+
 # Store the absolute path to the .git directory
 GIT_DIR = os.path.join(os.getcwd(), ".git")
 def init():
@@ -136,6 +139,72 @@ def get_mode(path):
     else:
         raise ValueError(f"Unknown file type for path: {path}")
 
+def cmtree():
+    msg = sys.argv[-1]
+    
+    tree_sha = sys.argv[2]
+    name = "Mohammed Omair Mohiuddin"
+    email = "mohammedomair07@gmail.com"
+    epoch_time = int(time.time())
+    timezone_offset = get_timezone_offset()
+    if "-p" in sys.argv:
+        parent_commit_sha = sys.argv[-3]
+        commit_content = (
+            f"tree {tree_sha}\n"
+            f"parent {parent_commit_sha}\n"  # Omit if there's no parent commit
+            f"author {name} {epoch_time} {timezone_offset}\n"
+            f"committer {name} {epoch_time} {timezone_offset}\n"
+            f"\n"
+            f"{msg}\n"
+        )
+    else:
+        commit_content = (
+            f"tree {tree_sha}\n"
+            f"author {name} {epoch_time} {timezone_offset}\n"
+            f"committer {name} {epoch_time} {timezone_offset}\n"
+            f"\n"
+            f"{msg}\n"
+        )
+    commit_content_bytes = commit_content.encode("utf-8")
+    header = f"commit {len(commit_content_bytes)}\0".encode("utf-8")
+    full_content = header + commit_content_bytes
+
+    #Compute the SHA-1 hash
+    sha1_hash = hashlib.sha1(full_content).hexdigest()
+
+    #Compress the content
+    compressed_content = zlib.compress(full_content)
+
+    #Save the compressed content in .git/objects
+    dir_path = f".git/objects/{sha1_hash[:2]}"
+    file_path = f"{dir_path}/{sha1_hash[2:]}"
+    os.makedirs(dir_path, exist_ok=True)
+    with open(file_path, "wb") as f:
+        f.write(compressed_content)
+
+    return sha1_hash
+    
+def get_timezone_offset():
+    # Get the current time with UTC offset
+    now = datetime.now()
+    if now.utcoffset() is None:
+        # If no timezone info, assume local timezone
+        now = datetime.now(timezone.utc).astimezone()
+    
+    # Get the offset in seconds from UTC
+    offset_seconds = now.utcoffset().total_seconds()
+    
+    # Calculate hours and minutes
+    hours, remainder = divmod(abs(offset_seconds), 3600)
+    minutes = remainder // 60
+    
+    # Determine the sign of the offset
+    sign = '+' if offset_seconds >= 0 else '-'
+    
+    # Format as ±HHMM
+    return f"{sign}{int(hours):02d}{int(minutes):02d}"
+
+
 def main():
     # You can use print statements as follows for debugging, they'll be visible when running tests.
 
@@ -152,6 +221,9 @@ def main():
         lstree()
     elif command == "write-tree":
         result = wrtree()
+        print(result)
+    elif command == "commit-tree":
+        result = cmtree()
         print(result)
     else:
         raise RuntimeError(f"Unknown command #{command}")
