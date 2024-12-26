@@ -1,59 +1,95 @@
-[![progress-banner](https://backend.codecrafters.io/progress/git/2a874233-037c-421e-b45c-cebc89023ab2)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# PyGit: A Hands-On Implementation of Git
 
-This is a starting point for Python solutions to the
-["Build Your Own Git" Challenge](https://codecrafters.io/challenges/git).
+A Python-based project that replicates core Git functionalities such as initializing repositories, writing trees, committing changes, and cloning remote repositories. This hands-on implementation provides an in-depth understanding of Git's internal mechanics and data structures.
 
-In this challenge, you'll build a small Git implementation that's capable of
-initializing a repository, creating commits and cloning a public repository.
-Along the way we'll learn about the `.git` directory, Git objects (blobs,
-commits, trees etc.), Git's transfer protocols and more.
+## Features
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+- **Repository Initialization (`init`)**: Create a `.git` directory with essential subdirectories and metadata.
+- **Object Management (`hash-object`)**: Hash and store blob objects in a zlib-compressed format.
+- **Tree Management (`write-tree`, `ls-tree`)**: Serialize and store directory structures as tree objects.
+- **Commit Creation (`commit-tree`)**: Generate commit objects with author, committer, and parent details.
+- **File Inspection (`cat-file`)**: Inspect and decompress stored Git objects.
+- **Repository Cloning (`clone`)**: Clone a remote repository using Git's Smart HTTP protocol and render the contents.
 
-# Passing the first stage
+## Installation
 
-The entry point for your Git implementation is in `app/main.py`. Study and
-uncomment the relevant code, and push your changes to pass the first stage:
+Ensure you have Python 3.7+ installed. Clone the repository and navigate to the project directory:
 
-```sh
-git commit -am "pass 1st stage" # any msg
-git push origin master
+```bash
+git clone https://github.com/Mohammed-Omair/PyGit-A-Hands-On-Implementation-of-Git.git
+cd PyGit-A-Hands-On-Implementation-of-Git/app
+pip install -r requirements.txt
+```
+## Usage
+
+### Initialize a Repository
+
+```bash
+python3 main.py init
 ```
 
-That's all!
+### Hash and Store a File
 
-# Stage 2 & beyond
-
-Note: This section is for stages 2 and beyond.
-
-1. Ensure you have `python` installed locally
-1. Run `./your_program.sh` to run your Git implementation, which is implemented
-   in `app/main.py`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
-
-# Testing locally
-
-The `your_program.sh` script is expected to operate on the `.git` folder inside
-the current working directory. If you're running this inside the root of this
-repository, you might end up accidentally damaging your repository's `.git`
-folder.
-
-We suggest executing `your_program.sh` in a different folder when testing
-locally. For example:
-
-```sh
-mkdir -p /tmp/testing && cd /tmp/testing
-/path/to/your/repo/your_program.sh init
+```bash
+python3 main.py hash-object -w <file>
 ```
 
-To make this easier to type out, you could add a
-[shell alias](https://shapeshed.com/unix-alias/):
+### Display the Contents of an Object
 
-```sh
-alias mygit=/path/to/your/repo/your_program.sh
-
-mkdir -p /tmp/testing && cd /tmp/testing
-mygit init
+```bash
+python3 pygit.py cat-file <SHA-1 hash>
 ```
+
+### Write a Tree
+
+```bash
+python3 main.py write-tree
+```
+
+### List Tree Contents
+
+```bash
+python3 pygit.py ls-tree <tree-sha>
+```
+
+### Create a Commit
+
+```bash
+python3 main.py commit-tree <tree-sha> -m "Commit message"
+```
+
+### Clone a Repository
+
+```bash
+python3 main.py clone <repo_url> <target_dir>
+```
+
+## Key Takeaways
+
+- **In-Depth Understanding of Git Internals**:
+  - Explored the architecture and functionality of Git, including objects (blobs, trees, and commits), hashing mechanisms, and storage structure.
+  - Learned how Git manages references, packfiles, and protocols for remote communication.
+- **Practical Experience with Low-Level Concepts**:
+  - Implemented the SHA-1 hashing algorithm and understood how it uniquely identifies Git objects.
+  - Used zlib compression to efficiently store and retrieve objects, mimicking Git's storage mechanisms.
+  - Simulated Git’s file modes (`100644`, `100755`, `40000`, etc.) and understood their significance.
+- **HTTP and Git Protocols**:
+  - Gained exposure to Git’s Smart HTTP protocol and its role in remote interactions.
+  - Implemented packet-based communication to fetch refs and objects using custom HTTP requests.
+- **Recursive Tree Rendering and Object Serialization**:
+  - Built a recursive system to render Git trees and manage nested directories.
+  - Serialized tree objects and understood their role in representing file hierarchy.
+- **Practical Python Skills**:
+  - Strengthened understanding of Python modules like `os`, `sys`, `zlib`, `hashlib`, and `urllib`.
+  - Managed errors gracefully using exception handling and designed reusable functions for modularity.
+- **System Design and Optimization**:
+  - Designed a mini Git system from scratch, improving understanding of how version control systems optimize storage and performance.
+  - Balanced simplicity and scalability in implementation, preparing for potential future extensions.
+- **Time and Space Efficiency**:
+  - Applied delta encoding and object reuse techniques to mimic Git's efficiency when handling similar or duplicate files.
+
+## Acknowledgments
+
+- [Pro Git by Scott Chacon](https://git-scm.com/book/en/v2) for foundational knowledge.
+- The [Git Documentation](https://git-scm.com/docs) for detailed insights.
+- The [CodeCrafters Git Challenge](https://app.codecrafters.io/catalog) for inspiring this project.
